@@ -18,8 +18,9 @@ export default function FileDisplay(props) {
         >
           Reset
         </button>
-        <button className="specialBtn px-4 py-2 rounded-lg text-orange-400">
+        <button className="specialBtn p-2 rounded-lg text-orange-400 flex items-center gap-2 font-medium">
           <p>Transcribe</p>
+          <i className="fa-solid fa-feather-pointed"></i>
         </button>
       </div>
     </main>
