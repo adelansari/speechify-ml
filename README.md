@@ -14,3 +14,8 @@ Currently, two official plugins are available:
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
+
+## adding transcriber model
+```sh
+npm i @xenova/transformers
+```
