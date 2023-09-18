@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Transcription from "./Transcription";
 import Translation from "./Translation";
 
 export default function Information(props) {
   const { output, finished } = props;
-  console.log(output);
-
   const [tab, setTab] = useState("transcription");
   const [translation, setTranslation] = useState(null);
   const [toLanguage, setToLanguage] = useState("Select language");
   const [translating, setTranslating] = useState(null);
+  const worker = useRef();
 
   function handleCopy() {
     navigator.clipboard.writeText(textElement);
@@ -22,6 +21,20 @@ export default function Information(props) {
     element.download = `Freescribe_${new Date().toString()}.txt`;
     document.body.appendChild(element);
     element.click();
+  }
+
+  function generateTranslation() {
+    if (translating || toLanguage === "Select language") {
+      return;
+    }
+
+    setTranslating(true);
+
+    worker.current.postMessage({
+      text: output.map((val) => val.text),
+      src_lang: "eng_Latn",
+      tgt_lang: toLanguage,
+    });
   }
 
   const textElement =
@@ -62,7 +75,16 @@ export default function Information(props) {
         {tab === "transcription" ? (
           <Transcription {...props} textElement={textElement} />
         ) : (
-          <Translation {...props} />
+          <Translation
+            {...props}
+            toLanguage={toLanguage}
+            textElement={textElement}
+            translating={translating}
+            setTranslation={setTranslation}
+            setTranslating={setTranslating}
+            setToLanguage={setToLanguage}
+            generateTranslation={generateTranslation}
+          />
         )}
       </div>
 
