@@ -4,13 +4,15 @@ import { MessageTypes } from "./presets";
 // handling the transcription pipeline for automatic speech recognition
 class MyTranscriptionPipeline {
   static task = "automatic-speech-recognition";
-  static model = "openai/whisper-tiny.en";
+  static model = "openai/whisper-tiny"; // remove the '.en'
   static instance = null;
 
   // get an instance of the pipeline
-  static async getInstance(progress_callback = null) {
+  static async getInstance(progress_callback = null, language = "en") {
     if (this.instance === null) {
-      this.instance = await pipeline(this.task, null, { progress_callback });
+      this.instance = await pipeline(this.task, `${this.model}.${language}`, {
+        progress_callback,
+      });
     }
 
     return this.instance;
@@ -26,13 +28,16 @@ self.addEventListener("message", async (event) => {
 });
 
 // transcribing audio
-async function transcribe(audio) {
+async function transcribe(audio, language) {
   sendLoadingMessage("loading");
 
   let pipeline;
 
   try {
-    pipeline = await MyTranscriptionPipeline.getInstance(load_model_callback);
+    pipeline = await MyTranscriptionPipeline.getInstance(
+      load_model_callback,
+      language
+    );
   } catch (err) {
     console.log(err.message);
   }
