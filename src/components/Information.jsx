@@ -10,6 +10,41 @@ export default function Information(props) {
   const [translating, setTranslating] = useState(null);
   const worker = useRef();
 
+  useEffect(() => {
+    if (!worker.current) {
+      worker.current = new Worker(
+        new URL("../utils/translate.worker.js", import.meta.url),
+        {
+          type: "module",
+        }
+      );
+    }
+
+    const onMessageReceived = async (e) => {
+      switch (e.data.status) {
+        case "initiate":
+          console.log("DOWNLOADING");
+          break;
+        case "progress":
+          console.log("LOADING");
+          break;
+        case "update":
+          setTranslation(e.data.output);
+          console.log(e.data.output);
+          break;
+        case "complete":
+          setTranslating(false);
+          console.log("DONE");
+          break;
+      }
+    };
+
+    worker.current.addEventListener("message", onMessageReceived);
+
+    return () =>
+      worker.current.removeEventListener("message", onMessageReceived);
+  });
+
   function handleCopy() {
     navigator.clipboard.writeText(textElement);
   }
@@ -18,7 +53,7 @@ export default function Information(props) {
     const element = document.createElement("a");
     const file = new Blob([textElement], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
-    element.download = `Freescribe_${new Date().toString()}.txt`;
+    element.download = `SpeeChify_${new Date().toString()}.txt`;
     document.body.appendChild(element);
     element.click();
   }
@@ -38,7 +73,9 @@ export default function Information(props) {
   }
 
   const textElement =
-    tab === "transcription" ? output.map((val) => val.text) : translation || "";
+    tab === "transcription"
+      ? output.map((val) => val.text)
+      : translation || "No Translation";
 
   return (
     <main className="flex-1  p-4 flex flex-col gap-3 text-center sm:gap-4 justify-center pb-20 max-w-prose w-full mx-auto">
@@ -80,6 +117,7 @@ export default function Information(props) {
             toLanguage={toLanguage}
             textElement={textElement}
             translating={translating}
+            finished={finished}
             setTranslation={setTranslation}
             setTranslating={setTranslating}
             setToLanguage={setToLanguage}
@@ -90,12 +128,14 @@ export default function Information(props) {
 
       <div className="flex item-center gap-4 mx-auto">
         <button
+          onClick={handleCopy}
           title="Copy"
           className="bg-white p-2 px-2 rounded-full aspect-square grid place-items-center text-orange-300 hover:text-orange-600 duration-200"
         >
           <i className="fa-solid fa-copy"></i>
         </button>
         <button
+          onClick={handleDownload}
           title="Download"
           className="bg-white p-2 px-2 rounded-full aspect-square grid place-items-center text-orange-300 hover:text-orange-600 duration-200"
         >

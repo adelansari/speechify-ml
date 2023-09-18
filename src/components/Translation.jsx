@@ -6,6 +6,8 @@ export default function Translation(props) {
     textElement,
     toLanguage,
     translating,
+    finished,
+    setTranslation,
     setToLanguage,
     generateTranslation,
   } = props;
@@ -42,7 +44,7 @@ export default function Translation(props) {
         </div>
       )}
       {textElement && !translating && <p>{textElement}</p>}
-      {translating && (
+      {translating && finished && (
         <div className="grid place-items-center">
           <i className="fa-solid fa-arrows-spin animate-spin"></i>
         </div>
