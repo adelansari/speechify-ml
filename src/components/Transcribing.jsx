@@ -8,7 +8,9 @@ export default function Transcribing(props) {
         <h1 className="font-semibold text-4xl sm:text-5xl md:text-6xl">
           <span className="text-orange-400 bold">Transcribing</span>
         </h1>
-        <p>{!downloading ? "warming up the magic" : "casting the spell"}</p>
+        <p>
+          {!downloading ? "deciphering the magic..." : "casting the spell..."}
+        </p>
       </div>
       <div className="flex flex-col gap-2 sm:gap-3 max-w-[400px] mx-auto w-full">
         {[0, 1, 2].map((value) => {
