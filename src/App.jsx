@@ -75,13 +75,14 @@ function App() {
   }
 
   // Function to handle form submission and start transcription
-  async function handleFormSubmission(language) {
+
+  async function handleFormSubmission() {
     if (!file && !audioStream) {
       return;
     }
 
     let audio = await readAudioFrom(file ? file : audioStream);
-    const model_name = `openai/whisper-tiny.${language}`;
+    const model_name = `openai/whisper-tiny`;
 
     worker.current.postMessage({
       type: MessageTypes.INFERENCE_REQUEST,
