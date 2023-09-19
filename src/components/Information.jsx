@@ -74,7 +74,18 @@ export default function Information(props) {
 
   const textElement =
     tab === "transcription"
-      ? output.map((val) => val.text)
+      ? (() => {
+          // split the output string into an array of sentences
+          let sentences = output.map((val) => val.text);
+          // console.log("sentences", Object.prototype.toString.call(sentences));
+          console.log("sentences: ", sentences);
+          // join the sentences array with a space separator
+          let text = sentences.join(" ");
+          // trim any leading or trailing whitespace
+          text = text.trim();
+
+          return text;
+        })()
       : translation || "No Translation";
 
   return (
