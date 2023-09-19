@@ -65,12 +65,25 @@ export default function Information(props) {
 
     setTranslating(true);
 
+    // Create an array of transcription segments with timestamps
+    const transcriptionSegments = output.map((val) => ({
+      text: val.text,
+      start: val.start,
+      end: val.end,
+    }));
+
     worker.current.postMessage({
       text: output.map((val) => val.text),
       src_lang: "eng_Latn",
       tgt_lang: toLanguage,
     });
   }
+
+  const transcriptionSegments = output.map((val) => ({
+    text: val.text,
+    start: val.start,
+    end: val.end,
+  }));
 
   const textElement =
     tab === "transcription"
@@ -121,7 +134,11 @@ export default function Information(props) {
 
       <div className="my-8 flex flex-col">
         {tab === "transcription" ? (
-          <Transcription {...props} textElement={textElement} />
+          <Transcription
+            {...props}
+            textElement={textElement}
+            segments={transcriptionSegments}
+          />
         ) : (
           <Translation
             {...props}
