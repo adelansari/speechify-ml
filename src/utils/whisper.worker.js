@@ -4,15 +4,20 @@ import { MessageTypes } from "./presets";
 // handling the transcription pipeline for automatic speech recognition
 class MyTranscriptionPipeline {
   static task = "automatic-speech-recognition";
-  static model = "openai/whisper-tiny";
+  static model = "Xenova/whisper-base";
   static instance = null;
 
   // get an instance of the pipeline
   static async getInstance(progress_callback = null) {
     if (this.instance === null) {
-      this.instance = await pipeline(this.task, null, { progress_callback });
+      try {
+        this.instance = await pipeline(this.task, this.model, {
+          progress_callback,
+        });
+      } catch (error) {
+        console.error("Error creating ASR pipeline:", error);
+      }
     }
-
     return this.instance;
   }
 }
