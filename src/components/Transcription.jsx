@@ -1,14 +1,50 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Transcription(props) {
   const { segments, textElement } = props;
+  const [displayedSegments, setDisplayedSegments] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Function to convert seconds to "mm:ss" format
+  // convert seconds to "mm:ss" format
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
+
+  const displaySegmentsWithAnimation = () => {
+    if (currentIndex < segments.length) {
+      setTimeout(() => {
+        setDisplayedSegments((prevSegments) => [
+          ...prevSegments,
+          segments[currentIndex],
+        ]);
+        setCurrentIndex(currentIndex + 1);
+      }, 500); // Adjust the delay as needed
+    }
+  };
+
+  useEffect(() => {
+    const animationInterval = setInterval(() => {
+      if (currentIndex < segments.length) {
+        setDisplayedSegments((prevSegments) => [
+          ...prevSegments,
+          segments[currentIndex],
+        ]);
+        setCurrentIndex(currentIndex + 1);
+      }
+    }, 500);
+
+    // Clear the interval when all segments are displayed
+    if (currentIndex === segments.length) {
+      clearInterval(animationInterval);
+    }
+
+    // Cleanup the interval when the component unmounts
+    return () => {
+      clearInterval(animationInterval);
+    };
+  }, [currentIndex, segments]);
 
   return (
     <div className="grid grid-cols-1 gap-4 text-left">
@@ -17,14 +53,14 @@ export default function Transcription(props) {
         <div className="text-gray-800">{textElement}</div>
       </div>
 
-      <div className="w-full flex flex-col my-2 p-4 max-h-[20rem] overflow-y-auto text-left">
-        {segments.map((segment, index) => (
+      <div className="w-full flex flex-col my-2 max-h-[20rem] overflow-y-auto text-left">
+        {displayedSegments.map((segment, index) => (
           <div
             key={index}
             className="w-full flex flex-row mb-2 bg-white rounded-lg p-4 shadow-xl shadow-black/5 ring-1 ring-slate-700/10"
           >
             <div className="mr-5">{`${formatTime(segment.start)}`}</div>
-            {segment.text}
+            <div className="text-animation">{segment.text}</div>
           </div>
         ))}
       </div>

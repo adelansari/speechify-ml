@@ -71,3 +71,16 @@ h3,
     width: 100%;
   }
 }
+
+.text-animation {
+  animation: textWriteAnimation 1s steps(40) forwards;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 0;
+}
+
+@keyframes textWriteAnimation {
+  to {
+    width: 100%;
+  }
+}

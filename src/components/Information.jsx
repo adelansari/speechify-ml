@@ -3,7 +3,7 @@ import Transcription from "./Transcription";
 import Translation from "./Translation";
 
 export default function Information(props) {
-  const { output, finished } = props;
+  const { output, finished, audioSourceURL } = props;
   const [tab, setTab] = useState("transcription");
   const [translation, setTranslation] = useState(null);
   const [toLanguage, setToLanguage] = useState("Select language");
@@ -134,11 +134,20 @@ export default function Information(props) {
 
       <div className="my-8 flex flex-col">
         {tab === "transcription" ? (
-          <Transcription
-            {...props}
-            textElement={textElement}
-            segments={transcriptionSegments}
-          />
+          <div>
+            <audio
+              controls
+              className="w-full h-14 rounded-lg bg-white shadow-xl shadow-black/5 ring-1 ring-slate-700/10"
+            >
+              <source src={audioSourceURL} type="audio/wav" />
+              Your browser does not support the audio element.
+            </audio>
+            <Transcription
+              {...props}
+              textElement={textElement}
+              segments={transcriptionSegments}
+            />
+          </div>
         ) : (
           <Translation
             {...props}

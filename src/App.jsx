@@ -14,12 +14,14 @@ function App() {
 
   const [finished, setFinished] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [audioSourceURL, setAudioSourceURL] = useState(null);
 
   const isAudioAvailable = file || audioStream;
 
   function handleAudioReset() {
     setFile(null);
     setAudioStream(null);
+    setAudioSourceURL(null);
   }
 
   // for transcribing, store the worker instance
@@ -71,6 +73,16 @@ function App() {
     const response = await file.arrayBuffer();
     const decoded = await audioCTX.decodeAudioData(response);
     const audio = decoded.getChannelData(0);
+
+    // Create an audio blob from the audio data
+    const audioBlob = new Blob([new DataView(audio.buffer)], {
+      type: "audio/wav",
+    });
+
+    // Create an object URL for the audio blob
+    const url = URL.createObjectURL(audioBlob);
+    setAudioSourceURL(url);
+
     return audio;
   }
 
@@ -96,7 +108,11 @@ function App() {
       <section className="min-h-screen flex flex-col">
         <Header />
         {output ? (
-          <Information output={output} finished={finished} />
+          <Information
+            output={output}
+            finished={finished}
+            audioSourceURL={audioSourceURL}
+          />
         ) : loading ? (
           <Transcribing />
         ) : isAudioAvailable ? (
